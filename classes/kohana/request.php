@@ -549,7 +549,7 @@ class Kohana_Request {
 	 *
 	 * @param   string  URI of the request
 	 * @return  void
-	 * @throws  Kohana_Request_Exception
+	 * @throws  HTTP_Exception
 	 * @uses    Route::all
 	 * @uses    Route::matches
 	 */
@@ -602,9 +602,7 @@ class Kohana_Request {
 		}
 
 		// No matching route for this URI
-		$this->status = 404;
-
-		throw new Kohana_Request_Exception('Unable to find a route to match the URI: :uri',
+		throw new HTTP_Exception(404, 'Unable to find a route to match the URI: :uri',
 			array(':uri' => $uri));
 	}
 
@@ -966,6 +964,10 @@ class Kohana_Request {
 			{
 				// Reflection will throw exceptions for missing classes or actions
 				$this->status = 404;
+			}
+			else if ($e instanceof HTTP_Exception)
+			{
+				$this->status = $e->getStatus();
 			}
 			else
 			{
